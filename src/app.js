@@ -18,7 +18,7 @@ import "react-dates/lib/css/_datepicker.css";
 const store = configureStore();
 
 // Provider - components listed in the Provider will have access to the redux n store
-
+console.log("test");
 const jsx = (
   <Provider store={store}>
     <AppRouter />
