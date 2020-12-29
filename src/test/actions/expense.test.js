@@ -5,11 +5,24 @@ import {
   addExpense,
   editExpense,
   removeExpense,
+  setExpenses,
+  startSetExpenses,
 } from "../../actions/expenses";
 import expenses from "../fixtures/expenses";
 import database from "../../firebase/firebase";
 
 const createMockStore = configureMockStore([thunk]);
+
+beforeEach((done) => {
+  const expensesData = {};
+  expenses.forEach(({ id, description, note, amount, createdAt }) => {
+    expensesData[id] = { description, note, amount, createdAt };
+  });
+  database
+    .ref("expenses")
+    .set(expensesData)
+    .then(() => done());
+});
 
 // toEqual - for comparing the property values of objects
 
@@ -129,3 +142,24 @@ test("should setup add expense action obejct with PROVIDED values", () => {
 //     },
 //   });
 // });
+
+// EDIT_EXPENSE
+test("should set expense action obejct with data", () => {
+  const action = setExpenses(expenses);
+  expect(action).toEqual({
+    type: "SET_EXPENSES",
+    expenses,
+  });
+});
+
+test("should fetch the expenses from firebase", () => {
+  const store = createMockStore({});
+  store.dispatch(startSetExpenses()).then(() => {
+    const actions = getActions();
+    expect(actions[0]).toEqual({
+      type: "SET_EXPENSES",
+      expenses,
+    });
+    done();
+  });
+});
